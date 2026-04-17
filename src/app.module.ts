@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EnvConfig } from './config/env.config';
 import { CommonModule } from './common/common.module';
+import { MailModule } from './mail/mail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +29,7 @@ import { CommonModule } from './common/common.module';
       }),
     }),
     CommonModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

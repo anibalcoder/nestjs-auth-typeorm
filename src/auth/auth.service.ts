@@ -5,12 +5,15 @@ import { LoginDto } from './dtos/login.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { VerificationCodeDto } from './dtos/verification-code.dto';
+import { NodemailerAdapter } from 'src/mail/adapters/nodemailer.adapter';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
+    private readonly mailAdapter: NodemailerAdapter,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
@@ -43,6 +46,16 @@ export class AuthService {
         nickname: user.nickname,
         email: user.email,
       },
+    };
+  }
+
+  async verifyCode(verificationCodeDto: VerificationCodeDto) {
+    const { email, code } = verificationCodeDto;
+
+    const result = await this.mailAdapter.sendVerificationCode(email, code);
+
+    return {
+      message: result,
     };
   }
 
