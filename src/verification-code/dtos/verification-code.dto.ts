@@ -1,4 +1,5 @@
-import { IsEmail, IsString, Matches, MaxLength } from 'class-validator';
+import { IsEmail, IsEnum, IsString, Matches, MaxLength } from 'class-validator';
+import { VerificationCodeEnum } from '../enums/verification-code.enum';
 
 export class VerificationCodeDto {
   @IsEmail()
@@ -10,4 +11,7 @@ export class VerificationCodeDto {
     message: 'El código debe tener exactamente 6 dígitos numéricos',
   })
   code: string;
+
+  @IsEnum(VerificationCodeEnum)
+  type: VerificationCodeEnum;
 }

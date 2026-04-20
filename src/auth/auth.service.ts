@@ -3,10 +3,11 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginDto } from './dtos/login.dto';
 import { UsersService } from 'src/users/users.service';
-import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { VerificationCodeDto } from './dtos/verification-code.dto';
 import { NodemailerAdapter } from 'src/mail/adapters/nodemailer.adapter';
+import { VerificationCodeService } from 'src/verification-code/verification-code.service';
+import * as bcrypt from 'bcrypt';
+import { VerificationCodeEnum } from 'src/verification-code/enums/verification-code.enum';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
     private readonly mailAdapter: NodemailerAdapter,
+    private readonly verificationCodeService: VerificationCodeService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
@@ -37,25 +39,19 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnauthorizedException('Credenciales inválidas');
 
-    return {
-      access_token: this.getJwtToken({ sub: user.id }),
-      user: {
-        id: user.id,
-        name: user.name,
-        lastName: user.lastName,
-        nickname: user.nickname,
-        email: user.email,
-      },
-    };
-  }
+    const code = this.verificationCodeService.generateCode();
 
-  async verifyCode(verificationCodeDto: VerificationCodeDto) {
-    const { email, code } = verificationCodeDto;
+    await this.verificationCodeService.create({
+      email,
+      code,
+      type: VerificationCodeEnum.LOGIN,
+    });
 
-    const result = await this.mailAdapter.sendVerificationCode(email, code);
+    await this.mailAdapter.sendVerificationCode(email, code);
 
     return {
-      message: result,
+      message: 'Se ha enviado un código de verificación a tu correo.',
+      email,
     };
   }
 

@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { MailModule } from 'src/mail/mail.module';
+import { VerificationCodeModule } from 'src/verification-code/verification-code.module';
 
 @Module({
   imports: [
@@ -20,8 +21,10 @@ import { MailModule } from 'src/mail/mail.module';
     }),
     UsersModule,
     MailModule,
+    VerificationCodeModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
+  exports: [JwtModule],
 })
 export class AuthModule {}
