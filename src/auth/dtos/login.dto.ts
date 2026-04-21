@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsString,
@@ -11,6 +12,9 @@ export class LoginDto {
   @MaxLength(255)
   email: string;
 
+  @ApiProperty({
+    description: `La contraseña debe contener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.`,
+  })
   @IsString()
   @MinLength(8)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {

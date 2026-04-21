@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsEmail,
@@ -7,6 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -28,6 +30,9 @@ export class CreateUserDto {
   @MaxLength(255)
   email: string;
 
+  @ApiProperty({
+    description: `La contraseña debe contener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.`,
+  })
   @IsString()
   @MinLength(8)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {
@@ -36,6 +41,9 @@ export class CreateUserDto {
   })
   password: string;
 
+  @ApiProperty({
+    example: [ValidRoles.USER],
+  })
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
